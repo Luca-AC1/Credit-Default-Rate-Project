@@ -17,3 +17,11 @@ Filtered so that only completed loans were kept (status of `Fully Paid`, `Charge
 **Target Variable**
 
 The binary target variable `default` was created, with a value of 1 for `Charged Off` and `Default` statuses and then 0 for `Fully Paid`. This resulted in a heavily imbalanced dataset, with about 80.1% of loans being fully paid and the other 19.9% defaulting.
+
+**Leakage Prevention**
+
+Post loan variables that wouldn't have been available at the time of the application were removed to prevent data leakage. This includes hardship data and payment data. `int_rate` was kept although it could perhaps be seen as post-loan as it is set partially based on risk. The outcome of this will be discussed in a later section.
+
+**Feature Removal**
+
+Irrelevant columns such as URLs and other identifiers are dropped. All the joint application data is dropped as this is a small minority but would lead to a much more complicated model. Columns with large amounts of missing data are also dropped along with `installment` and `total_acc` due to their high correlations with `loan_amnt` and `open_acc` respectively.
