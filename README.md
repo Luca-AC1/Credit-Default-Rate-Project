@@ -25,3 +25,15 @@ Post loan variables that wouldn't have been available at the time of the applica
 **Feature Removal**
 
 Irrelevant columns such as URLs and other identifiers are dropped. All the joint application data is dropped as this is a small minority but would lead to a much more complicated model. Columns with large amounts of missing data are also dropped along with `installment` and `total_acc` due to their high correlations with `loan_amnt` and `open_acc` respectively.
+
+**Other Feature Updates**
+
+- `fico_avg`: the average of `fico_range_low` and `fico_range_high`.
+- `credit_history_months`: the number of months between `earlies_cr_line` and `issue_d`.
+- `mort_acc`: missing values are filled with the median.
+- `emp_length`: missing values are filled with `Unknown` which is treated as a separate category. This was found to have a notably higher default rate than the others.
+- All other columns with missing values have the rows dropped due to the minimal amount of missing data.
+- `sub_grade`: natural order from A1 through to G5 so assigned a value 1 through 35.
+- `emp_length`: assigned a value -1 through 10 where `Unknown` is -1 and `10+ years` is 10.
+- `term`: mapped to integer 36 or 60 for the two unique terms.
+- The remaining categorical data (`purpose`, `home_ownership` and `verification_status`) is split into dummy variables due to there being no real order.
