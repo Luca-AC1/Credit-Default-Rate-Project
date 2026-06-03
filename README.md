@@ -28,12 +28,26 @@ Irrelevant columns such as URLs and other identifiers are dropped. All the joint
 
 **Other Feature Updates**
 
-- `fico_avg`: the average of `fico_range_low` and `fico_range_high`.
-- `credit_history_months`: the number of months between `earlies_cr_line` and `issue_d`.
-- `mort_acc`: missing values are filled with the median.
-- `emp_length`: missing values are filled with `Unknown` which is treated as a separate category. This was found to have a notably higher default rate than the others.
-- All other columns with missing values have the rows dropped due to the minimal amount of missing data.
-- `sub_grade`: natural order from A1 through to G5 so assigned a value 1 through 35.
-- `emp_length`: assigned a value -1 through 10 where `Unknown` is -1 and `10+ years` is 10.
-- `term`: mapped to integer 36 or 60 for the two unique terms.
-- The remaining categorical data (`purpose`, `home_ownership` and `verification_status`) is split into dummy variables due to there being no real order.
+- `fico_avg`: the average of `fico_range_low` and `fico_range_high`
+- `credit_history_months`: the number of months between `earlies_cr_line` and `issue_d`
+- `mort_acc`: missing values are filled with the median
+- `emp_length`: missing values are filled with `Unknown` which is treated as a separate category. This was found to have a notably higher default rate than the others
+- All other columns with missing values have the rows dropped due to the minimal amount of missing data
+- `sub_grade`: natural order from A1 through to G5 so assigned a value 1 through 35
+- `emp_length`: assigned a value -1 through 10 where `Unknown` is -1 and `10+ years` is 10
+- `term`: mapped to integer 36 or 60 for the two unique terms
+- The remaining categorical data (`purpose`, `home_ownership` and `verification_status`) is split into dummy variables due to there being no real order
+
+### 2. Exploratory Data Analysis
+**Key Findings**
+
+- The data is heavily imbalanced - a model predicting `Fully Paid` every time would achieve 80.1% accuracy so accuracy will not be a useful measurement
+- `int_rate` has the highest correlation with `default` (0.259) although it is important to be careful with this as it is set partially based on risk. Outside of `int_rate`, `fico_avg` (-0.132) and `dti` (0.109) have the highest correlation. No individual variable is strongly correlated with the target variable which confirms a model is required to capture the combined effects of multiple variables
+- The default rate increases with `pub_rec_bankruptcies`, although there are a limited number of applicants with 6 or more bankruptcies where this relationship is the clearest, so this could just be noise
+- `sub_grade` shows a clear monotonic increase in default rate, reflecting the validity of LendingClub's grading system
+- Small business loans are the riskiest compared to wedding and car loans defaulting half as frequently
+- There is no real trend in `emp_length` other than `Unknown` being noticeable higher at 25%. This confirms that it was the correct decision to assign a new value to this group instead of removing them. `10+ years` has a default rate roughly 1% lower than the others but this isn't big enough to be meaningful
+- Those with a verified income status default a lot more than those who haven't verified. I expect this is because income status was only verified for lenders who seemed risky
+- Defaulters with a lower income default more often. While income is also negatively biased, this is stronger in the default rate reflecting the increase in defaulters at lower incomes
+- There is a clear downward trend in default rate as the number of mortgage accounts increases. These people have already been deemed trustworthy elsewhere so you would expect them to default less.
+- Both loan volume and default rate steadily increased from 2007-15, likely due to a loosening in lending criteria in order to aid the rapid growth
