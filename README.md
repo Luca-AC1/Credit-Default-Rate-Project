@@ -49,5 +49,9 @@ Irrelevant columns such as URLs and other identifiers are dropped. All the joint
 - There is no real trend in `emp_length` other than `Unknown` being noticeable higher at 25%. This confirms that it was the correct decision to assign a new value to this group instead of removing them. `10+ years` has a default rate roughly 1% lower than the others but this isn't big enough to be meaningful
 - Those with a verified income status default a lot more than those who haven't verified. I expect this is because income status was only verified for lenders who seemed risky
 - Defaulters with a lower income default more often. While income is also negatively biased, this is stronger in the default rate reflecting the increase in defaulters at lower incomes
-- There is a clear downward trend in default rate as the number of mortgage accounts increases. These people have already been deemed trustworthy elsewhere so you would expect them to default less.
+- There is a clear downward trend in default rate as the number of mortgage accounts increases. These people have already been deemed trustworthy elsewhere so you would expect them to default less
 - Both loan volume and default rate steadily increased from 2007-15, likely due to a loosening in lending criteria in order to aid the rapid growth
+
+### 3. Modelling
+
+All models used an 80/20 train/test split and the Logistic Regression models used `StandardScaler`, making sure that variables on larger scales didn't disproportionately inflence the model. This was not required for the XGBoost or Random Forest models as they are tree based models that repeatedly split the data, they aren't affected by extreme values.
