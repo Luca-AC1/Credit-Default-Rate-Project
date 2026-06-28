@@ -54,4 +54,15 @@ Irrelevant columns such as URLs and other identifiers are dropped. All the joint
 
 ### 3. Modelling
 
-All models used an 80/20 train/test split and the Logistic Regression models used `StandardScaler`, making sure that variables on larger scales didn't disproportionately inflence the model. This was not required for the XGBoost or Random Forest models as they are tree based models that repeatedly split the data, they aren't affected by extreme values.
+All models used an 80/20 train/test split and the Logistic Regression models used `StandardScaler`, making sure that variables on larger scales didn't disproportionately influence the model. This was not required for the XGBoost or Random Forest models as they are tree based models that repeatedly split the data, they aren't affected by extreme values.  
+Class imbalance was another are that could negatively influence the model. This was tackled by using `class_weight='balanced'` in the Balanced Logistic Regression and Random Forest models, and `scale_pos_weight` in the XGBoost.  
+8 models were trained and evaluated:  
+| Model | AUC | Default Recall | Default Precision | Default F1 |
+| --- | --- | --- | --- | --- |
+| LR Standard | 0.7096 | 0.08 | 0.53 | 0.15 |
+| LR Balanced | 0.7098 | 0.64 | 0.32 | 0.43 |
+| L1 LR (C=1.0) | 0.7098 | 0.64 | 0.32 | 0.43 |
+| L2 LR (C=1.0) | 0.7098 | 0.64 | 0.32 | 0.43 |
+| Random Forest | 0.7106 | 0.69 | 0.31 | 0.42 |
+| Base XGBoost | 0.7147 | 0.68 | 0.31 | 0.43 |
+| Optimised XGBoost | 0.7248 | 0.67 | 0.33 | 0.44 |
