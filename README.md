@@ -55,7 +55,7 @@ Irrelevant columns such as URLs and other identifiers are dropped. All the joint
 ### 3. Modelling
 
 All models used an 80/20 train/test split and the Logistic Regression models used `StandardScaler`, making sure that variables on larger scales didn't disproportionately influence the model. This was not required for the XGBoost or Random Forest models as they are tree based models that repeatedly split the data, they aren't affected by extreme values.  
-Class imbalance was another are that could negatively influence the model. This was tackled by using `class_weight='balanced'` in the Balanced Logistic Regression and Random Forest models, and `scale_pos_weight` in the XGBoost.  
+Class imbalance was another are that could negatively influence the model. This was tackled by using `class_weight='balanced'` in the balanced logistic regression and random forest models, and `scale_pos_weight` in the XGBoost.  
 8 models were trained and evaluated:  
 | Model | AUC | Default Recall | Default Precision | Default F1 |
 | --- | --- | --- | --- | --- |
@@ -65,4 +65,11 @@ Class imbalance was another are that could negatively influence the model. This 
 | L2 LR (C=1.0) | 0.7098 | 0.64 | 0.32 | 0.43 |
 | Random Forest | 0.7106 | 0.69 | 0.31 | 0.42 |
 | Base XGBoost | 0.7147 | 0.68 | 0.31 | 0.43 |
-| Optimised XGBoost | 0.7248 | 0.67 | 0.33 | 0.44 |
+| Optimised XGBoost | 0.7248 | 0.67 | 0.33 | 0.44 |  
+
+Regularisation experiments for Logistic Regression (L1, Optimised L1, L2) saw no meaningful difference compared to the original balanced logistic regression model, suggesting that overfitting was not a problem. An interesting find within the balanced logistic regression coefficients was that `int_rate` in fact had a negative coefficient despite it having a strong positive correlation with default rate in the exploratory analysis. This reflects multicollinearity with `sub_grade` - once this is controlled, the residual variation in `int_rate` carries different information.  
+The Base XGBoost model performed noticeably better than the logistic regression models, so `RandomizedSearchCV` was used to optimise it and seek further improvement. 5 folds were fitted over 20 combinations, with the best parameters: `subsample = 0.8`, `n_estimators = 300`, `max_depth = 8`, , `learning_rate = 0.8`, `gamma = 0.3` and `colsample_bytree = 0.8`.  
+  
+**Model Evaluation**  
+  
+All models were plotted on a calibration curve. The standard logistic regression model was the best calibrated, with all other models consistently underestimating the default probabilities. This is particularly clear at lower predicted probabilities, and the tree based models (Random Forest and XGBoost) become better calibrated at higher probabilities. Platt scaling could be applied to correct this systematic error but that is beyond the scope of this project.  
