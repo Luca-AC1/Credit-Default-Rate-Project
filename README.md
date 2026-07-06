@@ -76,4 +76,18 @@ All models were plotted on a calibration curve. The standard logistic regression
   
 The optimised XGBoost model had a KS Statistic of 0.3282, with the maximum separation being at 0.5 which is the default threshold. This shows that the model is close to optimal in this respect, although depending on the risk profile this could be adjusted.  
   
-`sub_grade` dominates both XGBoost models, in particular the base model. This is expected as it has a shallower depth than the optimised model, so it relies more heavily on the strongest feature. It drops to just over 0.3 in the optimised model, showing that it is still a very important feature although it allows more importance to other features as well, making it more balanced. This is expected to be the most important feature as it is LendingClubs own risk rating. `int_rate` emerges as an important feature in the optimised model. With the model going deeper, it finds that this carries additional information outside of what can be seen from `sub_grade`. This supports my earlier decision to keep it. Having more important features makes the model more robust as it isn't as reliant on just `sub_grade`.
+`sub_grade` dominates both XGBoost models, in particular the base model. This is expected as it has a shallower depth than the optimised model, so it relies more heavily on the strongest feature. It drops to just over 0.3 in the optimised model, showing that it is still a very important feature although it allows more importance to other features as well, making it more balanced. This is expected to be the most important feature as it is LendingClubs own risk rating. `int_rate` emerges as an important feature in the optimised model. With the model going deeper, it finds that this carries additional information outside of what can be seen from `sub_grade`. This supports my earlier decision to keep it. Having more important features makes the model more robust as it isn't as reliant on just `sub_grade`.  
+
+## 4. Stability Testing
+
+All of the previous models incorporate a random train/test split. This assumes that loans from all time periods are interchangeable, and also for example the decision on a 2009 loan application could be influenced by what has been learned from a 2015 application. It is clear to see that this isn't what happens in real models, they are trained on known/past data and deployed on future data.  
+To test whether the model held up over time, I reused the parameters from the optimised XGBoost but with a chronological train/test split.  
+- **Training Data**: 2007-2014
+- **Testing Data**: 2015-2018
+
+| | Random Split | Temporal Split |
+| --- | --- | --- |
+| AUC | 0.7248 | 0.7183 |
+| KS | 0.3282 | 0.3162 |  
+
+There is only a small drop in performance in both metrics. This suggests that the model has learned genuine signals about lenders instead of time-specific patterns. This is a promising sign and shows that the model holds up over time.
