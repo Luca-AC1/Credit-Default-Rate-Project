@@ -91,3 +91,13 @@ To test whether the model held up over time, I reused the parameters from the op
 | KS | 0.3282 | 0.3162 |  
 
 There is only a small drop in performance in both metrics. This suggests that the model has learned genuine signals about lenders instead of time-specific patterns. This is a promising sign and shows that the model holds up over time.
+  
+---
+  
+**Key Findings**
+
+- Optimised XGBoost model performs the best, with an AUC of 0.7248 and KS Statistic of 0.3282.
+- Sub-Grade dominates feature importance, even in the optimised model it accounts for over 30% of the feature importance. This shows how strong LendingClub's rating system is.
+- Class imbalance has a real impact on the model. The standard logistic regression model only catches 8% of defaulters compared to the balanced model catching 64%. However, precision decreases and the AUC score is nearly identical. This demonstrates the importance of comparing and balancing both metrics depending on the needs of the model.
+- Regularisation isn't necessary. Both L1 and L2 regularisation made no real difference to the model. This is reflected in the optimised L1 regularisation, where C = 1291 was found to be optimal. This is almost no regularisation.
+- The model is temporally stable, only seeing a small drop off in performance when a temporal split is introduced.
