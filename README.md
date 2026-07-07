@@ -101,3 +101,12 @@ There is only a small drop in performance in both metrics. This suggests that th
 - Class imbalance has a real impact on the model. The standard logistic regression model only catches 8% of defaulters compared to the balanced model catching 64%. However, precision decreases and the AUC score is nearly identical. This demonstrates the importance of comparing and balancing both metrics depending on the needs of the model.
 - Regularisation isn't necessary. Both L1 and L2 regularisation made no real difference to the model. This is reflected in the optimised L1 regularisation, where C = 1291 was found to be optimal. This is almost no regularisation.
 - The model is temporally stable, only seeing a small drop off in performance when a temporal split is introduced.
+
+---
+
+**Limitations**
+
+- Probability calibration: Applying Platt scaling to the optimised XGBoost model would make it better calibrated and thus more useful for real decision making.
+- Threshold optimisation: A base threshold of 0.5 was used, although this may not be optimal. Can also be adjusted based on risk appetite.
+- Stability test: There was a train/test split of 35/65 compared to the standard 80/20. This means the temporal model was trained on less (~50%) data than the randomly split models so this cannot be ruled out as being the reason for the slight decrease in performance until a similar split is applied.
+- Features: `sub_grade` and `int_rate` are partially derived from LendingClub's risk assessment and thus a proxy for the default risk which this model is trying to estimate. This is different to leakage but it means the model's predictive power partly reflects the judgement of LendingClub instead of entirely on independent signals taken from borrower characteristics. Thus, the AUC likely overstates the predictive ability of the model. In a real PD model, default risk would be derived entirely from borrower characteristics instead of another institution's ratings.
