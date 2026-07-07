@@ -66,17 +66,23 @@ Class imbalance was another are that could negatively influence the model. This 
 | Random Forest | 0.7106 | 0.69 | 0.31 | 0.42 |
 | Base XGBoost | 0.7147 | 0.68 | 0.31 | 0.43 |
 | Optimised XGBoost | 0.7248 | 0.67 | 0.33 | 0.44 |  
+  
+![ROC Curve Comparison](ROC.png)
 
 Regularisation experiments for Logistic Regression (L1, Optimised L1, L2) saw no meaningful difference compared to the original balanced logistic regression model, suggesting that overfitting was not a problem. An interesting find within the balanced logistic regression coefficients was that `int_rate` in fact had a negative coefficient despite it having a strong positive correlation with default rate in the exploratory analysis. This reflects multicollinearity with `sub_grade` - once this is controlled, the residual variation in `int_rate` carries different information.  
 The Base XGBoost model performed noticeably better than the logistic regression models, so `RandomizedSearchCV` was used to optimise it and seek further improvement. 5 folds were fitted over 20 combinations, with the best parameters: `subsample = 0.8`, `n_estimators = 300`, `max_depth = 8`, , `learning_rate = 0.8`, `gamma = 0.3` and `colsample_bytree = 0.8`.  
   
 **Model Evaluation**  
   
-All models were plotted on a calibration curve. The standard logistic regression model was the best calibrated, with all other models consistently underestimating the default probabilities. This is particularly clear at lower predicted probabilities, and the tree based models (Random Forest and XGBoost) become better calibrated at higher probabilities. Platt scaling could be applied to correct this systematic error but that is beyond the scope of this project.  
+All models were plotted on a calibration curve. The standard logistic regression model was the best calibrated, with all other models consistently underestimating the default probabilities. This is particularly clear at lower predicted probabilities, and the tree based models (Random Forest and XGBoost) become better calibrated at higher probabilities. Platt scaling could be applied to correct this systematic error but that is beyond the scope of this project. 
+  
+![Calibration Curve Comparison](Calibration.png)
   
 The optimised XGBoost model had a KS Statistic of 0.3282, with the maximum separation being at 0.5 which is the default threshold. This shows that the model is close to optimal in this respect, although depending on the risk profile this could be adjusted.  
   
 `sub_grade` dominates both XGBoost models, in particular the base model. This is expected as it has a shallower depth than the optimised model, so it relies more heavily on the strongest feature. It drops to just over 0.3 in the optimised model, showing that it is still a very important feature although it allows more importance to other features as well, making it more balanced. This is expected to be the most important feature as it is LendingClubs own risk rating. `int_rate` emerges as an important feature in the optimised model. With the model going deeper, it finds that this carries additional information outside of what can be seen from `sub_grade`. This supports my earlier decision to keep it. Having more important features makes the model more robust as it isn't as reliant on just `sub_grade`.  
+  
+![Feature Importances](XGB_f_importance.png)
 
 ## 4. Stability Testing
 
